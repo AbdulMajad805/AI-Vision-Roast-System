@@ -58,7 +58,7 @@ st.markdown("""
 <style>
 /* Background like paper */
 body {
-    background-color: #fdf6e3;
+    background-color:#fdf3d7;
 }
 
 /* Main title */
