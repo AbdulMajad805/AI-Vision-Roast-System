@@ -4,23 +4,28 @@ from PIL import Image
 import requests
 import os
 
-# 🔐 Secure API Key
+# 🔐 Get API Key securely
 HF_API_KEY = os.getenv("HF_API_KEY")
 
-API_URL = "https://api-inference.huggingface.co/models/gpt2"
+if not HF_API_KEY:
+    st.error("⚠️ API key not found. Please add it in Streamlit Secrets.")
+    st.stop()
+
+# 🔥 Use better model (more stable than GPT-2)
+API_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
 headers = {"Authorization": f"Bearer {HF_API_KEY}"}
 
 
-# 🤖 AI Roast Function
+# 🤖 AI Roast Function (ROBUST)
 def ai_roast(caption):
-    prompt = f'''
+    prompt = f"""
 You are a funny and savage internet roaster.
-Roast this person based on the description below in one short line.
+Roast this person in ONE short funny line.
 
 Description: {caption}
 
 Roast:
-'''
+"""
 
     payload = {
         "inputs": prompt,
@@ -31,21 +36,32 @@ Roast:
         }
     }
 
-    response = requests.post(API_URL, headers=headers, json=payload)
-    result = response.json()
+    try:
+        response = requests.post(API_URL, headers=headers, json=payload, timeout=30)
 
-    if isinstance(result, dict) and "error" in result:
-        return "Model is loading... try again in a few seconds 😅"
+        # ❌ API error
+        if response.status_code != 200:
+            return "API is busy... try again 😅"
 
-    return result[0]['generated_text']
+        result = response.json()
+
+        # ❌ Model loading / error
+        if isinstance(result, dict) and "error" in result:
+            return "Model is loading... try again in a few seconds 😅"
+
+        return result[0]['generated_text']
+
+    except Exception:
+        return "Something went wrong while roasting 😭"
 
 
-# 📦 Load Model
+# 📦 Load Caption Model
 @st.cache_resource
 def load_model():
     processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
     model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
     return processor, model
+
 
 processor, model = load_model()
 
@@ -53,41 +69,38 @@ processor, model = load_model()
 # 🎨 UI CONFIG
 st.set_page_config(page_title="AI Roast System", layout="centered")
 
-# 🎨 Custom CSS (Card Style)
-st.markdown(
-    """
-    <style>
-    body {
-        background-color: #f5f7fa;
-    }
-    .title {
-        text-align: center;
-        font-size: 36px;
-        font-weight: bold;
-        margin-bottom: 25px;
-    }
-    .card {
-        background-color: white;
-        padding: 25px;
-        border-radius: 15px;
-        box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
-    }
-    .roast-box {
-        background-color: #f1f3f6;
-        padding: 15px;
-        border-radius: 10px;
-        font-size: 18px;
-        margin-top: 10px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+# 🎨 Custom CSS
+st.markdown("""
+<style>
+body {
+    background-color: #f5f7fa;
+}
+.title {
+    text-align: center;
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 25px;
+}
+.card {
+    background-color: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+}
+.roast-box {
+    background-color: #f1f3f6;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 18px;
+    margin-top: 10px;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # 🔥 Title
 st.markdown('<div class="title">AI Vision Roast System 😂🔥</div>', unsafe_allow_html=True)
 
-# 📦 Card Start
+# 📦 Card
 st.markdown('<div class="card">', unsafe_allow_html=True)
 
 uploaded_file = st.file_uploader("Upload Image", type=["jpg", "png", "jpeg"])
@@ -110,5 +123,4 @@ if uploaded_file:
         st.markdown("### 🔥 Roast Output")
         st.markdown(f'<div class="roast-box">{roast}</div>', unsafe_allow_html=True)
 
-# 📦 Card End
 st.markdown('</div>', unsafe_allow_html=True)
