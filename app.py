@@ -58,7 +58,7 @@ st.markdown("""
 <style>
 /* 🔥 MAIN BACKGROUND FIX */
 [data-testid="stAppViewContainer"] {
-    background-color:  #eaf4ff !important;
+    background-color:  #2f2f3a !important;
 }
  
 /* Optional: remove dark header */
