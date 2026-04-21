@@ -4,16 +4,7 @@ from PIL import Image
 import requests
 import os
 
-# 🔐 Get API Key securely
-HF_API_KEY = os.getenv("HF_API_KEY")
 
-if not HF_API_KEY:
-    st.error("⚠️ API key not found. Please add it in Streamlit Secrets.")
-    st.stop()
-
-# 🔥 Use better model (more stable than GPT-2)
-API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-base"
-headers = {"Authorization": f"Bearer {HF_API_KEY}"}
 
 
 # 🤖 AI Roast Function (ROBUST)
