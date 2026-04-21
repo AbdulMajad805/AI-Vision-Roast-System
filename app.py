@@ -12,7 +12,7 @@ if not HF_API_KEY:
     st.stop()
 
 # 🔥 Use better model (more stable than GPT-2)
-API_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
+API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-base"
 headers = {"Authorization": f"Bearer {HF_API_KEY}"}
 
 
