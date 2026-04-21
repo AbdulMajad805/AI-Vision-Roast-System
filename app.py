@@ -15,10 +15,16 @@ client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 def ai_roast(caption):
     try:
         response = client.chat.completions.create(
-            model="llama3-8b-8192",
+            model="llama-3.1-8b-instant",  # ✅ FIXED MODEL
             messages=[
-                {"role": "system", "content": "You are a funny and savage roaster."},
-                {"role": "user", "content": f"Roast this: {caption}"}
+                {
+                    "role": "system",
+                    "content": "You are a funny and savage roaster. Give short, witty roasts."
+                },
+                {
+                    "role": "user",
+                    "content": f"Roast this: {caption}"
+                }
             ],
             temperature=0.9,
             max_tokens=50
@@ -28,6 +34,7 @@ def ai_roast(caption):
 
     except Exception as e:
         return f"Error: {str(e)}"
+        
 # 📦 Load Caption Model
 @st.cache_resource
 def load_model():
