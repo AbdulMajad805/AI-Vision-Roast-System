@@ -17,44 +17,32 @@ headers = {"Authorization": f"Bearer {HF_API_KEY}"}
 
 
 # 🤖 AI Roast Function (ROBUST)
+from groq import Groq
+
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
 def ai_roast(caption):
-    prompt = f"""
-You are a funny and savage internet roaster.
-Roast this person in ONE short funny line.
-
-Description: {caption}
-
-Roast:
-"""
-
-    payload = {
-        "inputs": prompt,
-        "parameters": {
-            "max_length": 60,
-            "temperature": 0.9,
-            "do_sample": True
-        }
-    }
-
     try:
-        response = requests.post(API_URL, headers=headers, json=payload, timeout=30)
+        response = client.chat.completions.create(
+            model="llama3-8b-8192",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a funny and savage roaster. Give short, witty roasts."
+                },
+                {
+                    "role": "user",
+                    "content": f"Roast this: {caption}"
+                }
+            ],
+            temperature=0.9,
+            max_tokens=50
+        )
 
-        # ❌ API error
-        if response.status_code != 200:
-            return "API is busy... try again 😅"
-
-        result = response.json()
-
-        # ❌ Model loading / error
-        if isinstance(result, dict) and "error" in result:
-            return "Model is loading... try again in a few seconds 😅"
-
-        return result[0]['generated_text']
+        return response.choices[0].message.content
 
     except Exception:
-        return "Something went wrong while roasting 😭"
-
-
+        return "Roast machine broke 😭 try again"
 # 📦 Load Caption Model
 @st.cache_resource
 def load_model():
