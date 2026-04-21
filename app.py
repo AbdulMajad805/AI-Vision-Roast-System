@@ -66,6 +66,7 @@ body {
     padding: 25px;
     border-radius: 15px;
     box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+    color: #1a1a1a;
 }
 .roast-box {
     background-color: #f1f3f6;
