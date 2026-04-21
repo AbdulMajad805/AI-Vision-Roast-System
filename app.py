@@ -58,9 +58,9 @@ st.markdown("""
 <style>
 /* 🔥 MAIN BACKGROUND FIX */
 [data-testid="stAppViewContainer"] {
-    background-color: linear-gradient(135deg, #f6d365, #fda085) !important;
+    background-color:  #eaf4ff !important;
 }
-
+ 
 /* Optional: remove dark header */
 [data-testid="stHeader"] {
     background: transparent;
