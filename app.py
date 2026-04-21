@@ -17,14 +17,8 @@ def ai_roast(caption):
         response = client.chat.completions.create(
             model="llama3-8b-8192",
             messages=[
-                {
-                    "role": "system",
-                    "content": "You are a funny and savage roaster. Give short, witty roasts."
-                },
-                {
-                    "role": "user",
-                    "content": f"Roast this: {caption}"
-                }
+                {"role": "system", "content": "You are a funny and savage roaster."},
+                {"role": "user", "content": f"Roast this: {caption}"}
             ],
             temperature=0.9,
             max_tokens=50
@@ -32,8 +26,8 @@ def ai_roast(caption):
 
         return response.choices[0].message.content
 
-    except Exception:
-        return "Roast machine broke 😭 try again"
+    except Exception as e:
+        return f"Error: {str(e)}"
 # 📦 Load Caption Model
 @st.cache_resource
 def load_model():
