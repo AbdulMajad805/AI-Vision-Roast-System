@@ -53,75 +53,136 @@ processor, model = load_model()
 # 🎨 UI CONFIG
 st.set_page_config(page_title="AI Roast System", layout="centered")
 
-# 🎨 CSS Styling
+# 🎨 NOTEBOOK STYLE CSS
 st.markdown("""
 <style>
+/* Background like paper */
 body {
-    background-color: #f5f7fa;
+    background-color: #fdf6e3;
 }
+
+/* Main title */
 .title {
-    text-align: center;
-    font-size: 36px;
+    font-family: 'Courier New', monospace;
+    font-size: 34px;
     font-weight: bold;
-    margin-bottom: 25px;
+    margin-bottom: 5px;
 }
-.card {
-    background-color: white;
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+
+.subtitle {
+    font-size: 14px;
+    margin-bottom: 15px;
 }
-.roast-box {
-    background-color: #f1f3f6;
-    padding: 15px;
-    border-radius: 10px;
+
+/* Sections */
+.section {
+    font-weight: bold;
+    margin-top: 15px;
+    border-top: 2px dashed #999;
+    padding-top: 8px;
+}
+
+/* Upload + camera layout */
+.upload-box {
+    border: 2px dashed #999;
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* Image preview */
+.preview-box {
+    border: 2px solid #333;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+}
+
+/* Button style */
+.stButton>button {
+    width: 100%;
+    background: linear-gradient(to right, #3b2f2f, #6b4f4f);
+    color: white;
     font-size: 18px;
+    border-radius: 5px;
+    height: 50px;
+}
+
+/* Roast box */
+.roast-box {
+    border: 2px solid #333;
+    padding: 15px;
+    font-size: 18px;
+    background-color: #fff;
+    color: #111;
+}
+
+/* Copy button */
+.copy-btn {
+    display: flex;
+    gap: 10px;
     margin-top: 10px;
-    color: #1a1a1a;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# 🔥 Title
-st.markdown('<div class="title">AI Vision Roast System 😂🔥</div>', unsafe_allow_html=True)
 
-# 📦 Card
-st.markdown('<div class="card">', unsafe_allow_html=True)
+# 🧾 TITLE
+st.markdown('<div class="title">AI Vision Roast System</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">by Abdul Majid</div>', unsafe_allow_html=True)
 
-# 🔘 Input Option
-option = st.radio("Choose Input Method:", ["Upload Image", "Take Photo"])
+
+# 📁 SECTION 1: Upload
+st.markdown('<div class="section">1. Upload section</div>', unsafe_allow_html=True)
+
+col1, col2 = st.columns(2)
 
 image = None
 
-# 📁 Upload
-if option == "Upload Image":
-    uploaded_file = st.file_uploader("Upload Image", type=["jpg", "png", "jpeg"])
+with col1:
+    uploaded_file = st.file_uploader("Upload image (png / jpg / webp)", label_visibility="collapsed")
     if uploaded_file:
         image = Image.open(uploaded_file).convert("RGB")
 
-# 📸 Camera
-elif option == "Take Photo":
-    camera_photo = st.camera_input("Take a photo")
+with col2:
+    camera_photo = st.camera_input("Take photo")
     if camera_photo:
         image = Image.open(camera_photo).convert("RGB")
 
-# 🖼️ Process Image
+
+# 🖼️ SECTION 2: Preview
+st.markdown('<div class="section">2. Preview section</div>', unsafe_allow_html=True)
+
 if image:
     st.image(image, use_column_width=True)
+else:
+    st.markdown('<div class="preview-box">image preview here<br>640 x 480 px</div>', unsafe_allow_html=True)
 
-    if st.button("🔥 Generate Roast"):
-        with st.spinner("Analyzing image..."):
-            inputs = processor(image, return_tensors="pt")
-            out = model.generate(**inputs)
-            caption = processor.decode(out[0], skip_special_tokens=True)
 
-        st.markdown(f"**Caption:** {caption}")
+# 🔘 SECTION 3: Button
+st.markdown('<div class="section">3. Generate button</div>', unsafe_allow_html=True)
 
-        with st.spinner("Cooking roast 🔥..."):
-            roast = ai_roast(caption)
+generate = st.button("Generate Roast →")
 
-        st.markdown("### 🔥 Roast Output")
-        st.markdown(f'<div class="roast-box">{roast}</div>', unsafe_allow_html=True)
 
-# 📦 End Card
-st.markdown('</div>', unsafe_allow_html=True)
+# 🔥 SECTION 4: OUTPUT
+st.markdown('<div class="section">4. Roast output</div>', unsafe_allow_html=True)
+
+if generate and image:
+    with st.spinner("Analyzing..."):
+        inputs = processor(image, return_tensors="pt")
+        out = model.generate(**inputs)
+        caption = processor.decode(out[0], skip_special_tokens=True)
+
+    roast = ai_roast(caption)
+
+    st.markdown(f'<div class="roast-box">"{roast}"</div>', unsafe_allow_html=True)
+
+    # Copy + Download
+    col1, col2 = st.columns(2)
+    with col1:
+        st.download_button("Copy roast", roast)
+    with col2:
+        st.download_button("Download", roast, file_name="roast.txt")
