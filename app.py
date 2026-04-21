@@ -56,9 +56,19 @@ st.set_page_config(page_title="AI Roast System", layout="centered")
 # 🎨 NOTEBOOK STYLE CSS
 st.markdown("""
 <style>
-/* Background */
-body {
-    background-color: linear-gradient(135deg, #f6d365, #fda085);
+/* 🔥 MAIN BACKGROUND FIX */
+[data-testid="stAppViewContainer"] {
+    background-color: #fdf3d7 !important;
+}
+
+/* Optional: remove dark header */
+[data-testid="stHeader"] {
+    background: transparent;
+}
+
+/* Optional: sidebar */
+[data-testid="stSidebar"] {
+    background-color: #fdf3d7;
 }
 
 /* Main title */
