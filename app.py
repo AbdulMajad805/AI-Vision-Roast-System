@@ -1,25 +1,28 @@
 import streamlit as st
 from transformers import BlipProcessor, BlipForConditionalGeneration
 from PIL import Image
-import requests
 import os
-
-
-
-
-# 🤖 AI Roast Function (ROBUST)
 from groq import Groq
 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+# 🔐 API Key
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
+if not GROQ_API_KEY:
+    st.error("⚠️ Groq API key not found. Add it in Streamlit Secrets.")
+    st.stop()
+
+client = Groq(api_key=GROQ_API_KEY)
+
+
+# 🤖 AI Roast Function
 def ai_roast(caption):
     try:
         response = client.chat.completions.create(
-            model="llama-3.1-8b-instant",  # ✅ FIXED MODEL
+            model="llama-3.1-8b-instant",
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a funny and savage roaster. Give short, witty roasts."
+                    "content": "You are a funny and savage internet roaster. Keep it short, witty, and sarcastic."
                 },
                 {
                     "role": "user",
@@ -32,9 +35,10 @@ def ai_roast(caption):
 
         return response.choices[0].message.content
 
-    except Exception as e:
-        return f"Error: {str(e)}"
-        
+    except Exception:
+        return "Something went wrong 😭"
+
+
 # 📦 Load Caption Model
 @st.cache_resource
 def load_model():
@@ -49,7 +53,7 @@ processor, model = load_model()
 # 🎨 UI CONFIG
 st.set_page_config(page_title="AI Roast System", layout="centered")
 
-# 🎨 Custom CSS
+# 🎨 CSS Styling
 st.markdown("""
 <style>
 body {
@@ -66,7 +70,6 @@ body {
     padding: 25px;
     border-radius: 15px;
     box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
-    color: #1a1a1a;
 }
 .roast-box {
     background-color: #f1f3f6;
@@ -85,10 +88,25 @@ st.markdown('<div class="title">AI Vision Roast System 😂🔥</div>', unsafe_a
 # 📦 Card
 st.markdown('<div class="card">', unsafe_allow_html=True)
 
-uploaded_file = st.file_uploader("Upload Image", type=["jpg", "png", "jpeg"])
+# 🔘 Input Option
+option = st.radio("Choose Input Method:", ["Upload Image", "Take Photo"])
 
-if uploaded_file:
-    image = Image.open(uploaded_file).convert("RGB")
+image = None
+
+# 📁 Upload
+if option == "Upload Image":
+    uploaded_file = st.file_uploader("Upload Image", type=["jpg", "png", "jpeg"])
+    if uploaded_file:
+        image = Image.open(uploaded_file).convert("RGB")
+
+# 📸 Camera
+elif option == "Take Photo":
+    camera_photo = st.camera_input("Take a photo")
+    if camera_photo:
+        image = Image.open(camera_photo).convert("RGB")
+
+# 🖼️ Process Image
+if image:
     st.image(image, use_column_width=True)
 
     if st.button("🔥 Generate Roast"):
@@ -105,4 +123,5 @@ if uploaded_file:
         st.markdown("### 🔥 Roast Output")
         st.markdown(f'<div class="roast-box">{roast}</div>', unsafe_allow_html=True)
 
+# 📦 End Card
 st.markdown('</div>', unsafe_allow_html=True)
