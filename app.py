@@ -93,6 +93,7 @@ body {
     border-radius: 10px;
     font-size: 18px;
     margin-top: 10px;
+    color: #1a1a1a;
 }
 </style>
 """, unsafe_allow_html=True)
