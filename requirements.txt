@@ -4,4 +4,4 @@ torch
 torchvision
 pillow
 requests
-groq
+google-generativeai
