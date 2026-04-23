@@ -173,15 +173,6 @@ body::before {
     margin-bottom: 20px;
 }
 
-.upload-card::before {
-    content: '';
-    position: absolute;
-    inset: 6px;
-    border: 1px solid var(--gold-light);
-    border-radius: 2px;
-    opacity: 0.35;
-    pointer-events: none;
-}
 
 /* ── File Uploader Styling ── */
 [data-testid="stFileUploader"] {
@@ -381,6 +372,7 @@ st.markdown("""
     <h1>🔥 AI Vision Roaster 🔥</h1>
     <span class="ornament">⸻ ✦ ⸻</span>
     <p>Upload thine image &amp; receive a desi roasting of legendary proportions</p>
+    <p style="margin-top:10px; font-size:0.78rem; letter-spacing:4px; text-transform:uppercase; color:var(--gold); opacity:0.85;">✦ Created by Abdul Majid ✦</p>
 </div>
 """, unsafe_allow_html=True)
 
