@@ -11,7 +11,7 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 def ai_roast(caption):
     try:
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("gemini-2.0-flash")
         prompt = (
             f"You are a funny Pakistani desi roaster who roasts in simple, native English that everyone understands. "
             f"Think like a witty guy from Lahore or Karachi who cracks jokes. "
@@ -187,6 +187,45 @@ body::before {
     font-size: 1rem !important;
 }
 
+/* ── Camera Input Styling ── */
+[data-testid="stCameraInput"] {
+    border: 2px dashed var(--sepia-mid) !important;
+    border-radius: 4px !important;
+    background: rgba(201,151,59,0.05) !important;
+    padding: 16px !important;
+}
+
+[data-testid="stCameraInput"] label {
+    font-family: 'Playfair Display', serif !important;
+    color: var(--burnt) !important;
+    font-size: 1rem !important;
+}
+
+/* ── Tabs Styling ── */
+[data-testid="stTabs"] [role="tablist"] {
+    border-bottom: 2px solid var(--sepia-mid) !important;
+    gap: 4px;
+}
+
+[data-testid="stTabs"] button[role="tab"] {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 0.95rem !important;
+    letter-spacing: 1.5px !important;
+    color: var(--sepia-mid) !important;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 3px solid transparent !important;
+    padding: 10px 22px !important;
+    text-transform: uppercase !important;
+    transition: all 0.2s ease !important;
+}
+
+[data-testid="stTabs"] button[role="tab"][aria-selected="true"] {
+    color: var(--burnt) !important;
+    border-bottom: 3px solid var(--gold) !important;
+    background: rgba(201,151,59,0.08) !important;
+}
+
 /* ── Button ── */
 .stButton > button {
     font-family: 'Playfair Display', serif !important;
@@ -341,12 +380,23 @@ st.markdown("""
 # ============================================================
 st.markdown('<div class="upload-card">', unsafe_allow_html=True)
 
-uploaded_file = st.file_uploader("📜  Choose your image (JPG / PNG)", type=["jpg", "png", "jpeg"])
+tab1, tab2 = st.tabs(["📜  Upload Image", "📸  Live Camera"])
 
-if uploaded_file:
-    image = Image.open(uploaded_file).convert("RGB")
-    st.image(image, use_column_width=True)
+image = None
 
+with tab1:
+    uploaded_file = st.file_uploader("Choose your image (JPG / PNG)", type=["jpg", "png", "jpeg"], label_visibility="collapsed")
+    if uploaded_file:
+        image = Image.open(uploaded_file).convert("RGB")
+        st.image(image, use_column_width=True)
+
+with tab2:
+    camera_photo = st.camera_input("Point your camera & click the shutter", label_visibility="collapsed")
+    if camera_photo:
+        image = Image.open(camera_photo).convert("RGB")
+        st.image(image, use_column_width=True)
+
+if image is not None:
     st.markdown('<div class="antique-divider">· · · ✦ · · ·</div>', unsafe_allow_html=True)
 
     if st.button("🔥 Generate Roast — If You Dare"):
