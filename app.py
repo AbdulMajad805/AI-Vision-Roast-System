@@ -1,27 +1,37 @@
 import streamlit as st
 from transformers import BlipProcessor, BlipForConditionalGeneration
 from PIL import Image
-import google.generativeai as genai
-import os
+from groq import Groq
 
 # ============================================================
-# 🤖 AI Roast Function — Google Gemini (Free via AI Studio)
+# 🤖 AI Roast Function — Groq (Free, No Daily Limits)
 # ============================================================
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
 def ai_roast(caption):
     try:
-        model = genai.GenerativeModel("gemini-2.0-flash")
-        prompt = (
-            f"You are a funny Pakistani desi roaster who roasts in simple, native English that everyone understands. "
-            f"Think like a witty guy from Lahore or Karachi who cracks jokes. "
-            f"Keep the roast SHORT — 2 to 3 sentences max. "
-            f"Make it funny, relatable, and easy to understand — like talking to a friend. "
-            f"No difficult words. No flowery English. Just savage desi humor in plain English. "
-            f"Roast this image description: {caption}"
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a funny Pakistani desi roaster. "
+                        "Roast in simple everyday English — like a witty guy from Lahore or Karachi chatting with friends. "
+                        "Keep it SHORT: 2 to 3 sentences only. "
+                        "Be savage but easy to understand. No big words. No formal English. "
+                        "Think: chai dhaba humor, street smart, relatable desi jokes."
+                    )
+                },
+                {
+                    "role": "user",
+                    "content": f"Roast this image: {caption}"
+                }
+            ],
+            temperature=0.95,
+            max_tokens=120
         )
-        response = model.generate_content(prompt)
-        return response.text.strip()
+        return response.choices[0].message.content.strip()
     except Exception as e:
         return f"Yaar kuch gadbad ho gayi: {str(e)}"
 
@@ -432,6 +442,6 @@ st.markdown('</div>', unsafe_allow_html=True)
 # ============================================================
 st.markdown("""
 <div class="antique-footer">
-    Powered by BLIP Vision · Google Gemini · Desi Humor Since Forever
+    Powered by BLIP Vision · Groq LLaMA · Desi Humor Since Forever
 </div>
 """, unsafe_allow_html=True)
